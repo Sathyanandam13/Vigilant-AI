@@ -1,0 +1,133 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.statCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.statHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.statHeader h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
+.iconBlue { color: #3b82f6; }
+.iconRed { color: #ef4444; }
+.iconOrange { color: #f97316; }
+.iconGreen { color: #10b981; }
+
+.statValue {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  color: #f8fafc;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 1024px) {
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartPanel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.chartPanel h3 {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #f1f5f9;
+}
+
+.chartWrapper {
+  height: 300px;
+  width: 100%;
+}
+
+.activityFeed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feedItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  border-left: 2px solid transparent;
+}
+
+.severityDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.critical { background-color: #ef4444; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+.high { background-color: #f97316; box-shadow: 0 0 10px rgba(249, 115, 22, 0.5); }
+.medium { background-color: #eab308; box-shadow: 0 0 10px rgba(234, 179, 8, 0.5); }
+.low { background-color: #10b981; }
+
+.feedContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.feedContent strong {
+  font-size: 14px;
+  color: #e2e8f0;
+}
+
+.feedContent span {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 4px;
+}
+
+.feedTime {
+  font-size: 11px;
+  color: #475569;
+}

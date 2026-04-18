@@ -1,0 +1,35 @@
+{"level":"ERROR","timestamp":"2026-04-18T01:21:03.039Z","logger":"kafkajs","message":"[Connection] Connection error: ","broker":"localhost:9092","clientId":"detection-service","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)"}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:03.062Z","logger":"kafkajs","message":"[BrokerPool] Failed to connect to seed broker, trying another broker from the list: Connection error: ","retryCount":0,"retryTime":254}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:03.323Z","logger":"kafkajs","message":"[Connection] Connection error: ","broker":"localhost:9092","clientId":"detection-service","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)"}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:03.324Z","logger":"kafkajs","message":"[BrokerPool] Failed to connect to seed broker, trying another broker from the list: Connection error: ","retryCount":1,"retryTime":426}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:03.763Z","logger":"kafkajs","message":"[Connection] Connection error: ","broker":"localhost:9092","clientId":"detection-service","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)"}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:03.763Z","logger":"kafkajs","message":"[BrokerPool] Failed to connect to seed broker, trying another broker from the list: Connection error: ","retryCount":2,"retryTime":744}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:04.510Z","logger":"kafkajs","message":"[Connection] Connection error: ","broker":"localhost:9092","clientId":"detection-service","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)"}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:04.512Z","logger":"kafkajs","message":"[BrokerPool] Failed to connect to seed broker, trying another broker from the list: Connection error: ","retryCount":3,"retryTime":1744}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:06.264Z","logger":"kafkajs","message":"[Connection] Connection error: ","broker":"localhost:9092","clientId":"detection-service","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)"}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:06.265Z","logger":"kafkajs","message":"[BrokerPool] Failed to connect to seed broker, trying another broker from the list: Connection error: ","retryCount":4,"retryTime":3236}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:09.516Z","logger":"kafkajs","message":"[Connection] Connection error: ","broker":"localhost:9092","clientId":"detection-service","stack":"AggregateError [ECONNREFUSED]: \n    at internalConnectMultiple (node:net:1134:18)\n    at afterConnectMultiple (node:net:1715:7)"}
+{"level":"ERROR","timestamp":"2026-04-18T01:21:09.517Z","logger":"kafkajs","message":"[BrokerPool] Failed to connect to seed broker, trying another broker from the list: Connection error: ","retryCount":5,"retryTime":7272}
+KafkaJSNonRetriableError
+  Caused by: KafkaJSConnectionError: Connection error: 
+    at Socket.onError (C:\Users\Sathyanandam\OneDrive\Desktop\SOC\detection-service\node_modules\kafkajs\src\network\connection.js:210:23)
+    ... 3 lines matching cause stack trace ...
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+  name: 'KafkaJSNumberOfRetriesExceeded',
+  retriable: false,
+  helpUrl: undefined,
+  retryCount: 5,
+  retryTime: 7272,
+  [cause]: KafkaJSConnectionError: Connection error: 
+      at Socket.onError (C:\Users\Sathyanandam\OneDrive\Desktop\SOC\detection-service\node_modules\kafkajs\src\network\connection.js:210:23)
+      at Socket.emit (node:events:508:28)
+      at emitErrorNT (node:internal/streams/destroy:170:8)
+      at emitErrorCloseNT (node:internal/streams/destroy:129:3)
+      at process.processTicksAndRejections (node:internal/process/task_queues:90:21) {
+    retriable: true,
+    helpUrl: undefined,
+    broker: 'localhost:9092',
+    code: 'ECONNREFUSED',
+    [cause]: undefined
+  }
+}

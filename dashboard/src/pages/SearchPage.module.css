@@ -1,0 +1,98 @@
+.container {
+  display: flex;
+  justify-content: center;
+  padding-top: 80px;
+  height: 100%;
+}
+
+.hero {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+}
+
+.heroIcon {
+  color: #3b82f6;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-size: 32px;
+  color: #fff;
+  margin: 0 0 16px 0;
+}
+
+.hero p {
+  color: #94a3b8;
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 40px 0;
+}
+
+.searchForm {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.massiveInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 18px 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: monospace;
+}
+
+.massiveInput:focus {
+  border-color: #3b82f6;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.searchBtn {
+  background: #3b82f6;
+  color: #fff;
+  border: none;
+  padding: 0 32px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.searchBtn:hover {
+  background: #2563eb;
+}
+
+.suggestions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.suggestions span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.suggestions button {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.suggestions button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}

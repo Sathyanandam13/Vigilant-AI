@@ -1,0 +1,5 @@
+C:\Users\Sathyanandam\OneDrive\Desktop\SOC\dashboard\src\components\layout\Sidebar.jsx:27 - Parsing error: Expecting Unicode escape sequence \uXXXX
+C:\Users\Sathyanandam\OneDrive\Desktop\SOC\dashboard\src\pages\AlertDetailsPage.jsx:46 - Parsing error: Expecting Unicode escape sequence \uXXXX
+C:\Users\Sathyanandam\OneDrive\Desktop\SOC\dashboard\src\pages\AlertsPage.jsx:44 - Parsing error: Expecting Unicode escape sequence \uXXXX
+C:\Users\Sathyanandam\OneDrive\Desktop\SOC\dashboard\src\pages\DashboardPage.jsx:99 - Parsing error: Expecting Unicode escape sequence \uXXXX
+C:\Users\Sathyanandam\OneDrive\Desktop\SOC\dashboard\src\pages\IncidentsPage.jsx:22 - Parsing error: Expecting Unicode escape sequence \uXXXX

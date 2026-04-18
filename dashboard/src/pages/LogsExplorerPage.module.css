@@ -1,0 +1,163 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+}
+
+.subtitle {
+  color: #94a3b8;
+  margin: 8px 0 0 0;
+}
+
+.exportBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.exportBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.queryBar {
+  background: rgba(6, 11, 25, 0.5);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 12px;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.searchBox {
+  position: relative;
+  width: 100%;
+}
+
+.icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #3b82f6;
+}
+
+.searchInput {
+  width: 100%;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 16px 16px 16px 48px;
+  color: #00ff66;
+  font-family: monospace;
+  font-size: 15px;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+.filtersWrapper {
+  display: flex;
+  gap: 12px;
+}
+
+.filterPill {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: #e2e8f0;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.filterPill:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.logList {
+  background: #0f172a;
+  border-radius: 12px;
+  border: 1px solid #1e293b;
+  min-height: 400px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.logRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  border-bottom: 1px solid #1e293b;
+  transition: background 0.2s;
+}
+
+.logRow:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.logTime {
+  color: #64748b;
+  font-family: monospace;
+  font-size: 13px;
+  width: 100px;
+}
+
+.logMeta {
+  display: flex;
+  gap: 8px;
+  width: 250px;
+}
+
+.pill {
+  background: rgba(59, 130, 246, 0.1);
+  color: #60a5fa;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.logContent {
+  flex: 1;
+}
+
+.logContent code {
+  color: #a5b4fc;
+  font-size: 13px;
+}
+
+.emptyState {
+  padding: 40px;
+  text-align: center;
+  color: #64748b;
+}
