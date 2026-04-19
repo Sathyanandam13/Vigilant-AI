@@ -1,14 +1,28 @@
-import { useState, useEffect } from "react";
-import { liveAPI } from "../services/api";
-import { Calendar, Link } from "lucide-react";
-import styles from "./IncidentsPage.module.css";
-
+import React, { useState, useEffect } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import { liveAPI } from '../services/api';
+import { socketService } from "../services/socket";
+import { Link, Calendar } from 'lucide-react';
+import styles from './IncidentsPage.module.css';
 export default function IncidentsPage() {
   const [incidents, setIncidents] = useState([]);
 
   useEffect(() => {
     liveAPI.getIncidents().then(setIncidents);
+
+    socketService.subscribeToIncidents((newInc) => {
+      setIncidents((prev) => {
+        const index = prev.findIndex(i => i._id === newInc._id);
+        if (index !== -1) {
+          const updated = [...prev];
+          updated[index] = newInc;
+          return updated;
+        }
+        return [newInc, ...prev];
+      });
+    });
   }, []);
+
 
   return (
     <div className={styles.container}>
@@ -22,11 +36,12 @@ export default function IncidentsPage() {
               <span className={`${styles.severityBadge} ${styles[inc.severity.toLowerCase()]}`}>
                 {inc.severity}
               </span>
-              <span className={`${styles.statusBadge} ${inc.status === 'Active' ? styles.active : styles.investigating}`}>
+              <span className={`${styles.statusBadge} ${styles[inc.status.toLowerCase()]}`}>
                 {inc.status}
               </span>
+
             </div>
-            
+
             <h3 className={styles.cardTitle}>{inc.name}</h3>
             <p className={styles.cardDesc}>{inc.description}</p>
 
@@ -39,7 +54,9 @@ export default function IncidentsPage() {
                 <Calendar size={14} />
                 <span>{new Date(inc.timestamp).toLocaleDateString()}</span>
               </div>
-              <button className={styles.btnAction}>Investigate</button>
+              <RouterLink to={`/incidents/${inc._id || inc.id}`} className={styles.btnAction}>
+                Investigate
+              </RouterLink>
             </div>
           </div>
         ))}
@@ -47,4 +64,3 @@ export default function IncidentsPage() {
     </div>
   );
 }
- 

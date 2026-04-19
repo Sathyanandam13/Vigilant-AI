@@ -3,9 +3,6 @@ const { Kafka } = require("kafkajs");
 
 const LOG_FILE = "/var/log/nginx/access.log";
 
-let lastSize = 0;
-
-// Kafka setup
 const kafka = new Kafka({
   clientId: "nginx-agent",
   brokers: ["localhost:9092"]
@@ -13,20 +10,16 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-// Parse nginx log
+let fileSize = 0;
+
 function parseLog(line) {
   const regex = /^(\S+) \S+ \S+ \[([^\]]+)\] "(\S+) (\S+) \S+" (\d{3})/;
-
   const match = line.match(regex);
 
-  if (!match) {
-    console.error("Failed to parse:", line);
-    return null;
-  }
+  if (!match) return null;
 
   return {
     source: "nginx",
-    type: "access_log",
     timestamp: new Date().toISOString(),
     data: {
       ip: match[1],
@@ -37,56 +30,44 @@ function parseLog(line) {
   };
 }
 
-// Send to Kafka
-async function sendToKafka(log) {
-  await producer.send({
-    topic: "nginx-logs",
-    messages: [{ value: JSON.stringify(log) }]
-  });
-}
+async function start() {
+  await producer.connect();
+  console.log("Agent started (tail mode)...");
 
-// Process new logs
-async function processLogs() {
-  try {
+  setInterval(() => {
     const stats = fs.statSync(LOG_FILE);
-    const currentSize = stats.size;
 
-    if (currentSize > lastSize) {
+    if (stats.size > fileSize) {
       const stream = fs.createReadStream(LOG_FILE, {
-        start: lastSize,
-        end: currentSize
+        start: fileSize,
+        end: stats.size,
+        encoding: "utf8"
       });
 
-      let data = "";
+      let buffer = "";
 
-      stream.on("data", chunk => {
-        data += chunk.toString();
-      });
+      stream.on("data", async (chunk) => {
+        buffer += chunk;
 
-      stream.on("end", async () => {
-        const lines = data.split("\n").filter(line => line);
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
 
         for (const line of lines) {
           const parsed = parseLog(line);
-          await sendToKafka(parsed);
-          console.log("Sent log:", parsed.data.ip);
+          if (!parsed) continue;
+
+          await producer.send({
+            topic: "nginx-logs",
+            messages: [{ value: JSON.stringify(parsed) }]
+          });
+
+          console.log("Sent:", parsed.data.ip);
         }
       });
 
-      lastSize = currentSize;
+      fileSize = stats.size;
     }
-
-  } catch (err) {
-    console.error("Error reading log file:", err.message);
-  }
-}
-
-// Start agent
-async function start() {
-  await producer.connect();
-  console.log("Agent started (polling)...");
-
-  setInterval(processLogs, 3000); // every 3 seconds
+  }, 1000);
 }
 
 start();

@@ -68,13 +68,58 @@ const RULES = [
       return log.endpoint.includes("/admin") || log.endpoint.includes("/root") || log.endpoint.includes("/config");
     },
     evaluate: (log) => ({ matched: true, evidence: { endpoint: log.endpoint } })
+  },
+  {
+    id: "TRAFFIC_SPIKE_001",
+    description: "High volume of requests from single source",
+    match: (log) => true, // Continuous evaluation
+    evaluate: (log, state) => {
+      // > 50 requests in tracking window (last hour)
+      if (state.req_count > 50) {
+        return {
+          matched: true,
+          evidence: {
+            request_count: state.req_count,
+            threshold: 50
+          }
+        };
+      }
+      return { matched: false };
+    }
+  },
+  {
+    id: "ANOMALOUS_USER_AGENT",
+    description: "Suspicious or missing user agent",
+    match: (log) => {
+      const ua = log.raw_log.agent || log.raw_log.data?.agent;
+      if (!ua) return true;
+      return ua.includes("sqlmap") || ua.includes("nmap") || ua.includes("python-requests");
+    },
+    evaluate: (log) => ({ matched: true, evidence: { agent: log.raw_log.agent } })
+  },
+  {
+    id: "ENDPOINT_DISCOVERY_001",
+    description: "Scanning for many distinct endpoints",
+    match: (log) => log.status_code === 404 && !!log.endpoint,
+    evaluate: (log, state) => {
+      const recent = state.endpoints ? Array.from(state.endpoints) : [];
+      if (recent.length > 20) {
+        return {
+          matched: true,
+          evidence: { distinct_404s: recent.length }
+        };
+      }
+      return { matched: false };
+    }
   }
 ];
 
+
 class RulesEngine {
-  run(log) {
+  async run(log) {
     const alertsTriggered = [];
-    const state = stateTracker.getIpState(log.src_ip);
+    const state = await stateTracker.getIpState(log.src_ip);
+    if (!state) return [];
 
     for (const rule of RULES) {
       if (rule.match(log)) {
@@ -93,3 +138,4 @@ class RulesEngine {
 }
 
 module.exports = new RulesEngine();
+

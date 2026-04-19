@@ -5,6 +5,8 @@ import AlertsPage from "./pages/AlertsPage";
 import AlertDetailsPage from "./pages/AlertDetailsPage";
 import IncidentsPage from "./pages/IncidentsPage";
 import LogsExplorerPage from "./pages/LogsExplorerPage";
+import IncidentDetailsPage from "./pages/IncidentDetailsPage";
+import IpDrilldownPage from "./pages/IpDrilldownPage";
 import SearchPage from "./pages/SearchPage";
 
 function App() {
@@ -16,6 +18,8 @@ function App() {
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="alerts/:id" element={<AlertDetailsPage />} />
           <Route path="incidents" element={<IncidentsPage />} />
+          <Route path="incidents/:id" element={<IncidentDetailsPage />} />
+          <Route path="ips/:ip" element={<IpDrilldownPage />} />
           <Route path="logs" element={<LogsExplorerPage />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />

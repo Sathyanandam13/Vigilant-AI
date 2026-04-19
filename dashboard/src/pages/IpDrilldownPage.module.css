@@ -1,0 +1,170 @@
+.container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  color: #f8fafc;
+}
+
+.header {
+  margin-bottom: 32px;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 24px;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  background: linear-gradient(to right, #60a5fa, #c084fc);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.statsRow {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.statBox {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px 24px;
+  flex: 1;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.statBox:hover {
+  transform: translateY(-2px);
+  border-color: #475569;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.statValue {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.textRed { color: #ef4444; }
+.textOrange { color: #f59e0b; }
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chartSection, .alertsSection {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.chartSection h2, .alertsSection h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: #e2e8f0;
+}
+
+.chartContainer {
+  height: 350px;
+  width: 100%;
+}
+
+.alertsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* Custom Scrollbar */
+.alertsList::-webkit-scrollbar { width: 6px; }
+.alertsList::-webkit-scrollbar-track { background: transparent; }
+.alertsList::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+
+.alertCard {
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 16px;
+  transition: background 0.2s;
+}
+
+.alertCard:hover {
+  background: rgba(51, 65, 85, 0.5);
+}
+
+.alertHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.severityBadge {
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.critical { background: rgba(185, 28, 28, 0.2); color: #fca5a5; border: 1px solid #991b1b; }
+.high { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #b91c1c; }
+.medium { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #d97706; }
+.low { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid #2563eb; }
+
+.alertTime {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.alertType {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+  margin-bottom: 8px;
+}
+
+.alertMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #64748b;
+  font-style: italic;
+  text-align: center;
+}

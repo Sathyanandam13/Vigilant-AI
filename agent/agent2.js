@@ -3,10 +3,6 @@ const { Kafka } = require("kafkajs");
 
 const LOG_FILE = "/home/sathyanandam/conn.log";
 
-let lastSize = 0;
-let fieldMap = {}; // stores column positions
-
-// Kafka setup
 const kafka = new Kafka({
   clientId: "zeek-agent",
   brokers: ["localhost:9092"]
@@ -14,98 +10,112 @@ const kafka = new Kafka({
 
 const producer = kafka.producer();
 
-// Parse Zeek log using dynamic field map
+let fieldMap = {};
+let lastSize = 0;
+
+// ✅ Validate IP (IPv4 + IPv6)
+function isValidIP(ip) {
+  return typeof ip === "string" && (ip.includes(".") || ip.includes(":"));
+}
+
+// ✅ Parse Zeek log safely
 function parseZeekLog(line) {
   const parts = line.split("\t");
+
+  const src_ip = parts[fieldMap["id.orig_h"]];
+  const dest_ip = parts[fieldMap["id.resp_h"]];
+  const dest_port_raw = parts[fieldMap["id.resp_p"]];
+
+  if (!src_ip || !dest_ip) return null;
+  if (!isValidIP(dest_ip)) return null;
 
   return {
     source: "zeek",
     type: "conn_log",
     timestamp: new Date().toISOString(),
     data: {
-      src_ip: parts[fieldMap["id.orig_h"]],
-      dest_ip: parts[fieldMap["id.resp_h"]],
-      dest_port: parseInt(parts[fieldMap["id.resp_p"]])
+      src_ip,
+      dest_ip,
+      dest_port: parseInt(dest_port_raw) || null
     }
   };
 }
 
-// Send to Kafka
-async function sendToKafka(log) {
-  await producer.send({
-    topic: "zeek-logs",
-    messages: [{ value: JSON.stringify(log) }]
-  });
-}
-
-// Process logs
-async function processLogs() {
+// ✅ Process new data only (real-time style)
+async function processFile() {
   try {
     const stats = fs.statSync(LOG_FILE);
     const currentSize = stats.size;
 
-    if (currentSize > lastSize) {
-      const stream = fs.createReadStream(LOG_FILE, {
-        start: lastSize,
-        end: currentSize
-      });
+    // No new data
+    if (currentSize <= lastSize) return;
 
-      let data = "";
+    const stream = fs.createReadStream(LOG_FILE, {
+      start: lastSize,
+      end: currentSize,
+      encoding: "utf8"
+    });
 
-      stream.on("data", chunk => {
-        data += chunk.toString();
-      });
+    let data = "";
 
-      stream.on("end", async () => {
-        const lines = data.split("\n").filter(l => l);
+    stream.on("data", chunk => {
+      data += chunk;
+    });
 
-        for (const line of lines) {
+    stream.on("end", async () => {
+      const lines = data.split("\n").filter(line => line);
 
-          // Handle schema definition
-          if (line.startsWith("#fields")) {
-            const fields = line.split("\t").slice(1);
+      for (const line of lines) {
 
-            fieldMap = {}; // reset mapping
+        // ✅ Handle schema definition
+        if (line.startsWith("#fields")) {
+          const fields = line.split("\t").slice(1);
 
-            fields.forEach((field, index) => {
-              fieldMap[field] = index;
-            });
+          fieldMap = {};
+          fields.forEach((field, index) => {
+            fieldMap[field] = index;
+          });
 
-            console.log("Field map updated:", fieldMap);
-            continue;
-          }
-
-          // Skip comments
-          if (line.startsWith("#")) continue;
-
-          // Skip if schema not ready
-          if (!fieldMap["id.orig_h"]) continue;
-
-          try {
-            const parsed = parseZeekLog(line);
-            await sendToKafka(parsed);
-
-            console.log("Zeek sent:", parsed.data.src_ip);
-          } catch (err) {
-            console.error("Parsing error:", err.message);
-          }
+          console.log("FIELD MAP:", fieldMap);
+          continue; // 🔥 FIXED (not return)
         }
-      });
 
-      lastSize = currentSize;
-    }
+        // Skip comments
+        if (line.startsWith("#")) continue;
+
+        // Wait until schema is ready
+        if (!fieldMap["id.orig_h"] || !fieldMap["id.resp_h"]) continue;
+
+        const parsed = parseZeekLog(line);
+        if (!parsed) continue;
+
+        try {
+          await producer.send({
+            topic: "zeek-logs",
+            messages: [{ value: JSON.stringify(parsed) }]
+          });
+
+          console.log("Sent:", parsed.data.src_ip);
+        } catch (err) {
+          console.error("Kafka error:", err.message);
+        }
+      }
+    });
+
+    lastSize = currentSize;
 
   } catch (err) {
     console.error("File error:", err.message);
   }
 }
 
-// Start agent
+// ✅ Start agent
 async function start() {
   await producer.connect();
-  console.log("Zeek agent started...");
+  console.log("Zeek agent started (real-time)...");
 
-  setInterval(processLogs, 3000);
+  // Run every 2 seconds
+  setInterval(processFile, 2000);
 }
 
-start();
+start().catch(console.error);

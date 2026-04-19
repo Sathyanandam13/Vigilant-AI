@@ -1,41 +1,58 @@
 class CorrelationEngine {
   calculateScore(ruleViolations, log, state) {
     let score = 0;
-    
+
+    const WEIGHTS = {
+      "BRUTE_FORCE": 40,
+      "PORT_SCAN": 30,
+      "WEB_ATTACK": 50,
+      "ADMIN": 30,
+      "TRAFFIC_SPIKE": 20,
+      "ANOMALOUS": 25
+    };
+
     // Base rule scoring
     for (const v of ruleViolations) {
-      if (v.rule_id.startsWith("BRUTE_FORCE")) score += 50;
-      if (v.rule_id.startsWith("PORT_SCAN")) score += 30;
-      if (v.rule_id.startsWith("WEB_ATTACK")) score += 40;
-      if (v.rule_id.startsWith("ADMIN")) score += 20;
+      const category = Object.keys(WEIGHTS).find(c => v.rule_id.includes(c));
+      if (category) {
+        score += WEIGHTS[category];
+      }
     }
 
-    // Cross-source correlation
-    const hasNginx = state.requests.length > 0 || state.failed_logins.length > 0;
-    const hasZeek = state.ports.size > 0;
-    
-    if (hasNginx && hasZeek && score > 0) {
-      score += 40; // Escalate if crossing boundaries
+    // Cross-source correlation (Web + Network) escalation
+    const hasNetworkScan = ruleViolations.some(v => v.rule_id.includes("PORT_SCAN"));
+    const hasWebAttack = ruleViolations.some(v => v.rule_id.includes("WEB_ATTACK"));
+    const hasBruteForce = ruleViolations.some(v => v.rule_id.includes("BRUTE_FORCE"));
+
+    if (hasNetworkScan && (hasWebAttack || hasBruteForce)) {
+      score *= 1.5; // 50% escalation for specific hybrid attacks
+    } else {
+      const hasWeb = log.source === "nginx" || (state.endpoints && state.endpoints.size > 0);
+      const hasNetwork = log.source === "zeek" || (state.ports && state.ports.size > 0);
+      if (hasWeb && hasNetwork && score > 0) {
+        score *= 1.2; // 20% escalation for generic hybrid activity
+      }
     }
 
-    // High frequency penalty
-    if (state.requests.length > 100) {
+    // Velocity penalty
+    if (state.req_count > 200) {
       score += 20;
     }
 
-    return score;
+    return Math.min(score, 120); // Cap at 120
   }
 
   getSeverityLabel(score) {
-    if (score < 30) return "LOW";
-    if (score < 60) return "MEDIUM";
-    if (score < 90) return "HIGH";
+    if (score < 40) return "LOW";
+    if (score < 70) return "MEDIUM";
+    if (score < 100) return "HIGH";
     return "CRITICAL";
   }
 
   getConfidence(score) {
-    return Math.min(score / 150, 1.0).toFixed(2);
+    return Math.min(score / 100, 1.0).toFixed(2);
   }
+
 
   correlate(ruleViolations, log, state) {
     if (ruleViolations.length === 0) return null;

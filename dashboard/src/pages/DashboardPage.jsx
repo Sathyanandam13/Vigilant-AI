@@ -1,18 +1,25 @@
-import styles from "./DashboardPage.module.css";
-import { useEffect, useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { socketService } from "../services/socket";
 import { liveAPI } from "../services/api";
-import { Activity, ShieldAlert, CheckCircle, AlertTriangle } from "lucide-react";
-import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-
+import { Activity, AlertTriangle, ShieldAlert, CheckCircle } from 'lucide-react';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
+import styles from './DashboardPage.module.css';
 export default function DashboardPage() {
   const [alerts, setAlerts] = useState([]);
-  
+
   useEffect(() => {
-    const fetchAlerts = () => liveAPI.getAlerts().then(setAlerts);
-    fetchAlerts();
-    const interval = setInterval(fetchAlerts, 5000);
-    return () => clearInterval(interval);
+    liveAPI.getAlerts().then(setAlerts);
+
+    // Real-time updates
+    socketService.subscribeToAlerts((newAlert) => {
+      setAlerts((prev) => [newAlert, ...prev].slice(0, 50));
+    });
+
+    return () => {
+      // Unsubscribe logic if needed
+    };
   }, []);
+
 
   const total = alerts.length;
   const critical = alerts.filter(a => a.severity === "CRITICAL").length;
@@ -33,7 +40,7 @@ export default function DashboardPage() {
   return (
     <div className={styles.container}>
       <h1 className={styles.pageTitle}>SOC Overview</h1>
-      
+
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div className={styles.statHeader}>
@@ -76,13 +83,13 @@ export default function DashboardPage() {
               <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorAlerts" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <XAxis dataKey="name" stroke="#64748b" />
                 <YAxis stroke="#64748b" />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b' }}
                   itemStyle={{ color: '#3b82f6' }}
                 />
@@ -91,7 +98,7 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
         </div>
-        
+
         <div className={styles.chartPanel}>
           <h3>Recent Activity Stream</h3>
           <div className={styles.activityFeed}>

@@ -1,56 +1,51 @@
 const Incident = require("../../models/Incident");
+const Redis = require("ioredis");
+const redisPub = new Redis({ host: "localhost", port: 6379 });
 
 class IncidentEngine {
   constructor() {
-    this.memory = new Map(); // Simple cache to avoid querying mongodb for every alert
+    this.memory = new Map();
   }
 
   async processAlert(alertDocument) {
     const ip = alertDocument.sourceIp;
     if (!ip) return;
 
-    // Check if there is already an active incident for this IP
-    let incident = null;
-
-    if (this.memory.has(ip)) {
-      incident = this.memory.get(ip);
-    } else {
-      incident = await Incident.findOne({ ip, status: { $in: ["Active", "Investigating"] } });
-    }
+    let incident = await Incident.findOne({ ip, status: { $in: ["OPEN", "INVESTIGATING"] } });
 
     if (incident) {
       // Update existing incident
       incident.alertsCount += 1;
       incident.relatedAlerts.push(alertDocument._id.toString());
       incident.updatedAt = new Date();
-      
-      // Escalate Severity if alert is higher
+
+      // Escalate Severity
       const severities = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
-      const currentIdx = severities.indexOf(incident.severity);
-      const newIdx = severities.indexOf(alertDocument.severity);
-      if (newIdx > currentIdx) {
+      if (severities.indexOf(alertDocument.severity) > severities.indexOf(incident.severity)) {
         incident.severity = alertDocument.severity;
       }
 
       await incident.save();
-      this.memory.set(ip, incident);
-      console.log(`[Incident Engine] Escalated Incident: ${incident.name} for IP ${ip}`);
+      redisPub.publish("incidents", JSON.stringify(incident));
+      console.log(`[Incident Engine] Escalated Incident for IP ${ip}`);
 
     } else {
-      // If we see HIGH or CRITICAL alerts, create new Incident automatically
+      // Create new Incident for HIGH/CRITICAL alerts
       if (["HIGH", "CRITICAL"].includes(alertDocument.severity)) {
         const newInc = await Incident.create({
           name: `Correlated Attacks from ${ip}`,
+          status: "OPEN",
           severity: alertDocument.severity,
-          description: `Automatically created incident due to severe alerts triggering from IP.`,
+          description: `Automated incident discovery via high-confidence security alerts.`,
           alertsCount: 1,
           relatedAlerts: [alertDocument._id.toString()],
           ip: ip,
           timestamp: alertDocument.timestamp,
-          updatedAt: alertDocument.timestamp
+          updatedAt: alertDocument.timestamp,
+          notes: [{ text: "Incident automatically created by SOC Detection Engine.", author: "SYSTEM" }]
         });
-        
-        this.memory.set(ip, newInc);
+
+        redisPub.publish("incidents", JSON.stringify(newInc));
         console.log(`[Incident Engine] Created new Incident: ${newInc.name}`);
       }
     }
@@ -58,3 +53,4 @@ class IncidentEngine {
 }
 
 module.exports = new IncidentEngine();
+

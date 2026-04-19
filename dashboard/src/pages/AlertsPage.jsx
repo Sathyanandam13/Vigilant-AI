@@ -1,16 +1,26 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { liveAPI } from "../services/api";
-import { Search, Filter } from "lucide-react";
-import styles from "./AlertsPage.module.css";
-
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { liveAPI } from '../services/api';
+import { socketService } from "../services/socket";
+import { Search, Filter } from 'lucide-react';
+import styles from './AlertsPage.module.css';
 export default function AlertsPage() {
   const [alerts, setAlerts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     liveAPI.getAlerts().then(setAlerts);
+
+    // Real-time updates
+    socketService.subscribeToAlerts((newAlert) => {
+      setAlerts((prev) => [newAlert, ...prev].slice(0, 50)); // Keep last 50
+    });
+
+    return () => {
+      // In production, we'd unsubscribe here to avoid memory leaks
+    };
   }, []);
+
 
   return (
     <div className={styles.container}>
@@ -50,7 +60,7 @@ export default function AlertsPage() {
                 <td className={styles.alertType}>{alert.type}</td>
                 <td>
                   <span className={`${styles.statusBadge} ${styles[alert.status.replace(" ", "").toLowerCase()]}`}>
-                     {alert.status}
+                    {alert.status}
                   </span>
                 </td>
                 <td className={styles.assignee}>{alert.assignee || "Unassigned"}</td>
